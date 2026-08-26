@@ -8,6 +8,8 @@ import logging
 import warnings
 from pathlib import Path
 
+from prefect.blocks.system import Secret
+
 from opticstream.cli.oct import oct_cli
 from opticstream.cli.setup_common import default_zarr_config
 from opticstream.config.psoct_scan_config import get_psoct_scan_config_block_name
@@ -56,6 +58,7 @@ def setup(
     grid_size_x_normal: int = 1,
     grid_size_x_tilted: int = 1,
     grid_size_y: int = 1,
+    dandi: str | None = None,
 ) -> None:
     """
     Create or update the PSOCTScanConfig block for a project.
@@ -83,6 +86,7 @@ def setup(
         },
         mask_threshold_normal=_DEFAULT_MASK_NORMAL,
         mask_threshold_tilted=_DEFAULT_MASK_TILTED,
+        dandi_api_key=Secret.load(dandi) if dandi else None,
         zarr_config=default_zarr_config(),
     )
     scan_config.save(block_name, overwrite=True)
