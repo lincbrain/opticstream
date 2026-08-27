@@ -29,7 +29,7 @@ jobs:
           uv sync --extra dev --frozen
 
       - name: Run unit tests
-        run: uv run pytest -m "not integration" -ra
+        run: uv run pytest -ra
 
   integration-tests:
     name: Prefect integration tests
@@ -68,7 +68,7 @@ jobs:
         run: uv run prefect config set PREFECT_API_URL=http://127.0.0.1:4200/api
 
       - name: Run integration tests
-        run: uv run pytest -m integration -ra
+        run: uv run pytest -o addopts= -m integration -ra
 
       - name: Show service logs after a failure
         if: failure()

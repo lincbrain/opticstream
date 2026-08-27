@@ -52,6 +52,8 @@ include = ["opticstream*"]
 exclude = ["notebooks*"]
 
 [tool.pytest.ini_options]
+addopts = '-m "not integration"'
+testpaths = ["tests"]
 markers = [
   "integration: integration tests",
 ]
