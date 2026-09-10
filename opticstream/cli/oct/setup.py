@@ -8,6 +8,8 @@ import logging
 import warnings
 from pathlib import Path
 
+from prefect.blocks.system import Secret
+
 from opticstream.cli.oct import oct_cli
 from opticstream.cli.setup_common import default_zarr_config
 from opticstream.config.psoct_scan_config import get_psoct_scan_config_block_name
@@ -21,10 +23,6 @@ if not logging.getLogger().handlers:
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 logger = logging.getLogger(__name__)
-warnings.filterwarnings(
-    "ignore",
-    message=".*PydanticSerializationUnexpectedValue.*",
-)
 
 _DEFAULT_MASK_NORMAL = 60.0
 _DEFAULT_MASK_TILTED = 55.0
@@ -56,6 +54,7 @@ def setup(
     grid_size_x_normal: int = 1,
     grid_size_x_tilted: int = 1,
     grid_size_y: int = 1,
+    dandi: str | None = None,
 ) -> None:
     """
     Create or update the PSOCTScanConfig block for a project.
@@ -83,9 +82,20 @@ def setup(
         },
         mask_threshold_normal=_DEFAULT_MASK_NORMAL,
         mask_threshold_tilted=_DEFAULT_MASK_TILTED,
+        dandi_api_key=Secret.load(dandi) if dandi else None,
         zarr_config=default_zarr_config(),
     )
-    scan_config.save(block_name, overwrite=True)
+    # Prefect serializes the block through Pydantic, whose warning message is
+    # multiline when list-annotated dependency defaults contain tuples.  Keep
+    # the suppression local to this serialization operation so unrelated
+    # Pydantic warnings remain visible.
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            message=r"(?s).*PydanticSerializationUnexpectedValue.*",
+            category=UserWarning,
+        )
+        scan_config.save(block_name, overwrite=True)
     logger.info("Saved PSOCTScanConfig block as '%s'", block_name)
 
     created: list[Path] = []

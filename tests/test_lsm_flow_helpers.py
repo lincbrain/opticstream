@@ -87,9 +87,10 @@ def test_strip_zarr_output_path_uses_project_base_when_output_none():
     cfg = _minimal_cfg(output_path=None)
     sid = LSMStripId(project_name="myproj", slice_id=2, strip_id=7, channel_id=1)
     p = strip_zarr_output_path(sid, cfg)
-    assert str(p).startswith("/base")
-    assert "slice02" in p or "02" in p
-    assert "chunk-0007" in p or "0007" in p
+    path = str(p)
+    assert path.startswith("/base")
+    assert "slice02" in path or "02" in path
+    assert "chunk-0007" in path or "0007" in path
 
 
 def test_strip_zarr_output_path_prefers_output_path():
@@ -103,8 +104,9 @@ def test_strip_mip_output_path():
     cfg = _minimal_cfg(output_path="/z")
     sid = LSMStripId(project_name="myproj", slice_id=1, strip_id=3, channel_id=1)
     p = strip_mip_output_path(sid, cfg)
-    assert str(p).startswith("/z")
-    assert "proc-mip" in p
+    path = str(p)
+    assert path.startswith("/z")
+    assert "proc-mip" in path
 
 
 def test_channel_zarr_volume_path():

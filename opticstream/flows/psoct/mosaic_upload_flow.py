@@ -1,6 +1,7 @@
 from typing import Any, Dict, Optional, Sequence
 
 from prefect import flow, get_run_logger
+from prefect.blocks.system import Secret
 
 from opticstream.hooks.publish_hooks import (
     publish_oct_mosaic_hook,
@@ -9,6 +10,7 @@ from opticstream.hooks.publish_hooks import (
 from opticstream.events import MOSAIC_ENFACE_STITCHED, get_event_trigger
 from opticstream.events.psoct_events import MOSAIC_ENFACE_UPLOADED
 from opticstream.flows.psoct.utils import (
+    load_scan_config_for_payload,
     mosaic_ident_from_payload,
     nifti_paths_from_enface_outputs,
 )
@@ -32,6 +34,7 @@ def upload_mosaic_enface_to_dandi_flow(
     enface_outputs: Dict[str, str],
     *,
     dandi_instance: str = "linc",
+    dandi_api_key: Secret | None = None,
     force_rerun: bool = False,
 ) -> None:
     logger = get_run_logger()
@@ -40,16 +43,21 @@ def upload_mosaic_enface_to_dandi_flow(
         logger.warning("No enface NIfTI files found for %s", mosaic_ident)
         return
     upload_to_dandi_batch(
-        file_list=file_list, dandi_instance=dandi_instance, realpath=False
+        file_list=file_list,
+        dandi_instance=dandi_instance,
+        realpath=False,
+        dandi_api_key=dandi_api_key,
     )
 
 
 @flow
 def upload_mosaic_enface_to_dandi_event_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
     mosaic_ident = mosaic_ident_from_payload(payload)
+    cfg = load_scan_config_for_payload(payload)
     return upload_mosaic_enface_to_dandi_flow(
         mosaic_ident=mosaic_ident,
         enface_outputs=payload.get("symlink_targets", {}),
+        dandi_api_key=cfg.dandi_api_key,
         force_rerun=force_rerun_from_payload(payload),
     )
 

@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional, Sequence
 
 from prefect import flow
+from prefect.blocks.system import Secret
 from prefect.logging import get_run_logger
 
 from opticstream.hooks.publish_hooks import (
@@ -11,6 +12,7 @@ from opticstream.hooks.publish_hooks import (
 from opticstream.events import BATCH_ARCHIVED, BATCH_UPLOADED, get_event_trigger
 from opticstream.flows.psoct.utils import (
     batch_ident_from_payload,
+    load_scan_config_for_payload,
     path_list_from_payload,
 )
 from opticstream.state.milestone_wrappers_psoct import oct_batch_processing_milestone
@@ -32,6 +34,7 @@ def upload_to_dandi_tile_batch(
     *,
     dandi_instance: str = "linc",
     realpath: bool = True,
+    dandi_api_key: Secret | None = None,
     force_rerun: bool = False,
 ) -> None:
     logger = get_run_logger()
@@ -43,15 +46,18 @@ def upload_to_dandi_tile_batch(
         file_list=[str(path) for path in file_list],
         dandi_instance=dandi_instance,
         realpath=realpath,
+        dandi_api_key=dandi_api_key,
     )
 
 
 @flow
 def upload_to_linc_batch_event_flow(payload: Dict[str, Any]) -> None:
     batch_ident = batch_ident_from_payload(payload)
+    cfg = load_scan_config_for_payload(payload)
     return upload_to_dandi_tile_batch(
         batch_id=batch_ident,
         file_list=path_list_from_payload(payload),
+        dandi_api_key=cfg.dandi_api_key,
         force_rerun=force_rerun_from_payload(payload),
     )
 

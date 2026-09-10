@@ -7,6 +7,7 @@ from slack_sdk.errors import SlackApiError
 from prefect.blocks.system import Secret
 from prefect.blocks.notifications import SlackWebhook
 from prefect_slack import SlackCredentials
+from opticstream.utils.slack_settings import slack_notifications_enabled
 
 from opticstream.config.constants import (
     SLACK_API_TOKEN_BLOCK_NAME,
@@ -36,8 +37,11 @@ def send_slack_message(
     Returns
     -------
     bool
-        True if message sent successfully, False otherwise
+        True if message sent successfully, False if disabled or unsuccessful
     """
+    if not slack_notifications_enabled():
+        return False
+
     if slack_bot_token is None:
         slack_bot_token = SlackCredentials.load(
             SLACK_API_TOKEN_BLOCK_NAME
@@ -78,7 +82,12 @@ def send_slack_message_webhook(
 ) -> bool:
     """
     Send a text message to Slack channel using a webhook.
+
+    Returns False when notifications are disabled.
     """
+    if not slack_notifications_enabled():
+        return False
+
     if webhook is None:
         webhook = SlackWebhook.load(SLACK_WEBHOOK_BLOCK_NAME)
     webhook.notify(body, subject=subject)
@@ -115,8 +124,11 @@ def upload_multiple_files_to_slack(
     Returns
     -------
     Dict[str, bool]
-        Dictionary mapping filepath to upload success status
+        Dictionary mapping filepath to upload success status; False when disabled
     """
+    if not slack_notifications_enabled():
+        return {filepath: False for filepath in filepaths}
+
     if slack_bot_token is None:
         slack_bot_token = SlackCredentials.load(
             SLACK_API_TOKEN_BLOCK_NAME

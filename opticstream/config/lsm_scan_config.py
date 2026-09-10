@@ -4,6 +4,7 @@ from pathlib import Path
 
 from niizarr import ZarrConfig
 from prefect.blocks.core import Block
+from prefect.blocks.system import Secret
 from pydantic import BaseModel, Field, field_validator
 
 from opticstream.config.utils import with_positions
@@ -87,6 +88,13 @@ class LSMScanConfigModel(BaseModel):
     )
     dandiset_path: str = Field(
         default="linc://000052/", description="Path to the DANDI set to use for upload"
+    )
+    dandi_api_key: Secret | None = Field(
+        default=None,
+        description=(
+            "Prefect Secret block containing the DANDI/LINC API key. "
+            "If not set, the uploader uses its instance-specific default Secret block."
+        ),
     )
 
     # for acquisition host
@@ -173,6 +181,7 @@ class LSMScanConfigOverrides(BaseModel):
     dandi_bin: Optional[str] = None
     dandi_instance: Optional[str] = None
     dandiset_path: Path | None = None
+    dandi_api_key: Secret | None = None
 
     cpu_affinity: Optional[List[int]] = Field(default=None)
     num_workers: Optional[int] = Field(default=None, ge=1)
