@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional, Sequence
 
 from prefect import flow, get_run_logger
+from prefect.blocks.system import Secret
 
 from opticstream.hooks.publish_hooks import (
     publish_lsm_project_hook,
@@ -36,6 +37,7 @@ def upload_strip_to_dandi_flow(
     output_path: Path,
     dandi_instance: str = "linc",
     dandi_bin: str = "dandi",
+    dandi_api_key: Secret | None = None,
     force_rerun: bool = False,
 ) -> None:
     """
@@ -46,7 +48,10 @@ def upload_strip_to_dandi_flow(
     logger.info(f"Output path: {output_path}")
     logger.info(f"Uploading {strip_ident} to DANDI")
     upload_to_dandi(
-        os.fspath(output_path), dandi_instance=dandi_instance, dandi_bin=dandi_bin
+        os.fspath(output_path),
+        dandi_instance=dandi_instance,
+        dandi_bin=dandi_bin,
+        dandi_api_key=dandi_api_key,
     )
     logger.info(f"Successfully uploaded {strip_ident} to DANDI")
 
@@ -71,6 +76,7 @@ def upload_strip_to_dandi_event_flow(payload: Dict[str, Any]) -> None:
         force_rerun=force_rerun_from_payload(payload),
         dandi_instance=payload.get("dandi_instance") or cfg.dandi_instance,
         dandi_bin=payload.get("dandi_bin") or cfg.dandi_bin,
+        dandi_api_key=cfg.dandi_api_key,
     )
     
     # shutil.rmtree(output_path)

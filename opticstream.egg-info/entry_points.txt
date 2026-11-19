@@ -1,0 +1,3 @@
+[console_scripts]
+ops = opticstream.cli:main
+opticstream = opticstream.cli:main

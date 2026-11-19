@@ -40,6 +40,19 @@ It is composed from:
 - top-level output and modality settings (`enface_modalities`, `volume_modalities`,
   naming formats, masking thresholds, `zarr_config`)
 
+Both LSM and PS-OCT project configurations may reference a Prefect `Secret`
+block in `dandi_api_key`. Select the block in the Prefect dashboard, or set it
+during project setup by passing its block name, for example:
+
+```bash
+opticstream oct setup PROJECT_NAME --dandi noah-dandi-api-key
+opticstream lsm setup PROJECT_NAME --dandi noah-dandi-api-key
+```
+
+The API-key value remains in the Secret block; the project configuration stores
+a block reference. If `dandi_api_key` is unset, upload tasks retain the legacy
+instance-specific defaults (`dandi-api-key` or `linc-api-key`).
+
 See the concepts section for more detail on these configuration models.
 
 ## Using local checkouts of dev dependencies
@@ -76,4 +89,3 @@ directories instead of the remote git repositories, while other users who do not
 
 The exact `path = "..."` values are machine-specific. Each developer should adjust them in
 their own clone as needed.
-

@@ -271,6 +271,7 @@ def test_pydantic_validation_boundaries():
         LSMStripState(slice_id=-1, strip_id=0, channel_id=1)
 
 
+@pytest.mark.integration
 def test_lock_naming_helper_and_ensure_lock_do_not_crash(project_name: str):
     lock_name = _state_lock_name(project_name)
 

@@ -2,3 +2,6 @@
 *.pyc
 *.nii
 .vscode/
+/db/
+.DS_Store
+.venv

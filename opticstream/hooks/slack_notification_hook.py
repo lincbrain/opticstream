@@ -5,12 +5,16 @@ from prefect.settings import PREFECT_UI_URL
 from prefect.variables import Variable
 
 from opticstream.config.constants import SLACK_ONCALL_VARIABLE_NAME, SLACK_WEBHOOK_BLOCK_NAME
+from opticstream.utils.slack_settings import slack_notifications_enabled
 
 
 def slack_notification_hook(flow: Any, flow_run: Any, state: Any) -> None:
     """
     Send a Slack notification when a flow enters a state.
     """
+    if not slack_notifications_enabled():
+        return
+
     oncall_person = Variable.get(SLACK_ONCALL_VARIABLE_NAME, default={})
     oncall_person_mention = " ".join([f"<@{person}>" for person in oncall_person.values()])
     slack_webhook_block = SlackWebhook.load(SLACK_WEBHOOK_BLOCK_NAME)

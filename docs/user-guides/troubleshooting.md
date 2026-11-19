@@ -19,6 +19,19 @@ Checks:
 - run `opticstream lsm setup PROJECT_NAME` or `opticstream oct setup PROJECT_NAME`
 - verify block names follow project naming conventions used by setup commands
 
+## Disable Slack notifications
+
+In the Prefect UI, create or edit the variable `slack-notifications-enabled`.
+Set its value to the JSON boolean `false` (without quotes) to skip OpticStream
+Slack failure hooks, messages, and file uploads before any Slack blocks are loaded.
+Set it to `true` to enable notifications again. If absent, notifications are enabled.
+The setting applies to OCT and LSM jobs using the same Prefect server.
+
+The switch is read on each notification attempt, so subsequent changes do not
+require restarting watchers. Restart existing watchers/workers once after installing
+the code that supports this switch. Processing and its failure states are unaffected;
+disabled notification tasks return normally without sending anything.
+
 ## State lock or state backend issues
 
 Symptoms:

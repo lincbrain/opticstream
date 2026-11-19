@@ -65,6 +65,7 @@ def build_dandi_upload_command(
 def _build_dandi_upload_env(
     *,
     dandi_instance: DANDI_INSTANCE,
+    dandi_api_key: Secret | None = None,
 ) -> Dict[str, str]:
     """
     Build environment variables required by the DANDI/LINC CLI.
@@ -72,15 +73,20 @@ def _build_dandi_upload_env(
     Kept as a helper so both single-file and batch upload implementations
     share identical secret loading and env setup.
     """
-    if dandi_instance == "linc":
+    if dandi_api_key is not None:
+        api_key = dandi_api_key.get()
+    elif dandi_instance == "linc":
         api_key = Secret.load(LINC_API_TOKEN_BLOCK_NAME, validate=False).get()
+    else:
+        api_key = Secret.load(DANDI_API_TOKEN_BLOCK_NAME, validate=False).get()
+
+    if dandi_instance == "linc":
         return {
             "LINC_API_KEY": api_key,
             "DANDI_API_KEY": api_key,
             "DANDI_DEVEL": "1",
         }
 
-    api_key = Secret.load(DANDI_API_TOKEN_BLOCK_NAME, validate=False).get()
     return {
         "DANDI_API_KEY": api_key,
         "DANDI_DEVEL": "1",
@@ -95,6 +101,7 @@ def upload_to_dandi_batch(
     dandi_bin: str = "dandi",
     realpath: bool = True,
     max_jobs: str = "10:10",
+    dandi_api_key: Secret | None = None,
 ) -> None:
     """
     Upload multiple files to DANDI (or optionally to the LINC instance).
@@ -110,7 +117,10 @@ def upload_to_dandi_batch(
     )
 
     # Load secrets inside the task (not at import time).
-    env = _build_dandi_upload_env(dandi_instance=dandi_instance)
+    env = _build_dandi_upload_env(
+        dandi_instance=dandi_instance,
+        dandi_api_key=dandi_api_key,
+    )
 
     logger.info("Running DANDI batch upload with %s files", len(file_list))
     logger.info(command)
@@ -133,6 +143,7 @@ def upload_to_dandi(
     dandi_bin: str = "dandi",
     realpath: bool = True,
     max_jobs: str = "10:10",
+    dandi_api_key: Secret | None = None,
 ) -> None:
     """
     Upload the file to DANDI.
@@ -143,6 +154,7 @@ def upload_to_dandi(
         dandi_bin=dandi_bin,
         realpath=realpath,
         max_jobs=max_jobs,
+        dandi_api_key=dandi_api_key,
     )
 
 

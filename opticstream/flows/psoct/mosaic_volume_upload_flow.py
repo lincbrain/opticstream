@@ -1,6 +1,7 @@
 from typing import Any, Dict, Optional, Sequence
 
 from prefect import flow, get_run_logger
+from prefect.blocks.system import Secret
 
 from opticstream.hooks.publish_hooks import (
     publish_oct_mosaic_hook,
@@ -13,6 +14,7 @@ from opticstream.events import (
 )
 from opticstream.events.psoct_event_emitters import emit_mosaic_psoct_event
 from opticstream.flows.psoct.utils import (
+    load_scan_config_for_payload,
     mosaic_ident_from_payload,
     non_empty_paths_from_mapping,
 )
@@ -36,6 +38,7 @@ def upload_mosaic_volume_to_dandi_flow(
     volume_outputs: Dict[str, str],
     *,
     dandi_instance: str = "linc",
+    dandi_api_key: Secret | None = None,
     force_rerun: bool = False,
 ) -> Dict[str, Any]:
     logger = get_run_logger()
@@ -44,7 +47,10 @@ def upload_mosaic_volume_to_dandi_flow(
         logger.warning("No volume files found for %s", mosaic_ident)
         return {"uploaded": 0}
     upload_to_dandi_batch(
-        file_list=file_list, dandi_instance=dandi_instance, realpath=False
+        file_list=file_list,
+        dandi_instance=dandi_instance,
+        realpath=False,
+        dandi_api_key=dandi_api_key,
     )
     emit_mosaic_psoct_event(MOSAIC_VOLUME_UPLOADED, mosaic_ident)
     return {"uploaded": len(file_list)}
@@ -53,9 +59,11 @@ def upload_mosaic_volume_to_dandi_flow(
 @flow
 def upload_mosaic_volume_to_dandi_event_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
     mosaic_ident = mosaic_ident_from_payload(payload)
+    cfg = load_scan_config_for_payload(payload)
     return upload_mosaic_volume_to_dandi_flow(
         mosaic_ident=mosaic_ident,
         volume_outputs=payload.get("volume_outputs", {}),
+        dandi_api_key=cfg.dandi_api_key,
         force_rerun=force_rerun_from_payload(payload),
     )
 

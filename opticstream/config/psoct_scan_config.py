@@ -12,6 +12,7 @@ from enum import Enum
 from pathlib import Path
 
 from prefect.blocks.core import Block
+from prefect.blocks.system import Secret
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from niizarr import ZarrConfig
@@ -264,6 +265,13 @@ class PSOCTScanConfigModel(BaseModel):
     dandiset_path: Path | None = Field(
         default=None,
         description="Root path of the target DANDI dataset for upload, if not set, output will not be uploaded to DANDI",
+    )
+    dandi_api_key: Secret | None = Field(
+        default=None,
+        description=(
+            "Prefect Secret block containing the DANDI/LINC API key. "
+            "If not set, the uploader uses its instance-specific default Secret block."
+        ),
     )
     archive_path: Path | None = Field(
         default=None,

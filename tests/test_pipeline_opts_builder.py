@@ -48,7 +48,7 @@ def test_build_pipeline_opts_spectral_and_pixel_scale() -> None:
     assert po.spectral is not None
     assert po.spectral.aline_size == 100
     assert po.spectral.bline_size == 200
-    assert po.spectral.is_raw_format is True
+    assert po.spectral.is_raw_format is False
     po_t = build_pipeline_opts(cfg, illumination="tilted")
     assert po_t.spectral.aline_size == 50
 

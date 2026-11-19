@@ -1,6 +1,9 @@
 import logging
+import warnings
 
 from pathlib import Path
+
+from prefect.blocks.system import Secret
 
 from opticstream.config import LSMScanConfig
 from opticstream.cli.lsm.cli import lsm_cli
@@ -15,7 +18,6 @@ if not logging.getLogger().handlers:
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 logger = logging.getLogger(__name__)
-import warnings
 warnings.filterwarnings(
     "ignore",
     message=".*PydanticSerializationUnexpectedValue.*",
@@ -52,6 +54,7 @@ def setup(
     project_base_path: Path | None = None,
     info_file: Path | None = None,
     output_path: Path | None = None,
+    dandi: str | None = None,
 ) -> None:
     update_block()
     ensure_lock(project_name)
@@ -69,6 +72,7 @@ def setup(
         project_base_path=project_base_path if project_base_path else Path('.'),
         info_file=info_file if info_file else Path('./info.mat'),
         output_path=output_path if output_path else Path('.'),
+        dandi_api_key=Secret.load(dandi) if dandi else None,
         zarr_config=default_zarr_config(),
     )
     scan_config.save(block_name, overwrite=True)
