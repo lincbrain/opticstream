@@ -1,9 +1,28 @@
 [project]
 name = "opticstream"
-version = "0.1.0"
-description = "Add your description here"
+dynamic = ["version"]
+description = "Prefect-based workflows for processing light-sheet microscopy and PS-OCT data for the LINC project."
 readme = "README.md"
 requires-python = ">=3.11"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+authors = [
+    { name = "Kaidong Chai", email = "mail@kchai.me" },
+    { name = "Kabilar Gunalan", email = "kabi@mit.edu" },
+    { name = "James Jay Scherick" },
+]
+maintainers = [
+    { name = "Kaidong Chai", email = "mail@kchai.me" },
+    { name = "Kabilar Gunalan", email = "kabi@mit.edu" },
+]
+keywords = ["LINC", "neuroimaging", "microscopy", "light-sheet microscopy", "PS-OCT", "Prefect", "workflows"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Image Processing",
+]
 dependencies = [
     "cyclopts>=3.3.0",
     "linc-convert[all] @ git+https://github.com/lincbrain/linc-convert.git@dc8f3243df01d09493a13e53305adede08784695",
@@ -38,14 +57,25 @@ dev = [
 opticstream = "opticstream.cli:main"
 ops = "opticstream.cli:main"
 
+[project.urls]
+Homepage = "https://connects.mgh.harvard.edu"
+Documentation = "https://opticstream.lincbrain.org"
+Repository = "https://github.com/lincbrain/opticstream"
+Issues = "https://github.com/lincbrain/opticstream/issues"
+
 [tool.uv.sources]
 #linc-convert = { path = "/space/megaera/1/users/kchai/linc-convert", editable = true }
 #nifti-zarr = { path = "/space/megaera/1/users/kchai/nifti-zarr", editable = true }
 #psoct-toolbox = { path = "/space/megaera/1/users/kchai/code/psoct-toolbox", editable = true }
 
 [build-system]
-requires = ["setuptools>=61", "wheel"]
+requires = ["setuptools>=77", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta"
+
+# The version comes from the latest Git tag (e.g. 0.1.0), which the release
+# workflow creates. Builds outside a Git checkout fall back to 0.0.0.
+[tool.setuptools_scm]
+fallback_version = "0.0.0"
 
 [tool.setuptools.packages.find]
 include = ["opticstream*"]

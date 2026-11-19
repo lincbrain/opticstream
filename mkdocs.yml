@@ -86,6 +86,7 @@ nav:
       - LSM and OCT watcher design: developer/watcher_design_lsm_oct.md
       - Testing and CI: developer/testing_and_ci.md
       - Contributing: developer/contributing.md
+      - Release process: developer/release.md
       - OCT design overview: developer/oct_design_overview.md
       - OCT data flow and folder layout: developer/oct_data_flow.md
       - OCT events and state management: developer/oct_events_and_state.md

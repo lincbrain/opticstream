@@ -1,0 +1,16 @@
+{
+    "baseBranch": "master",
+    "name": "github-actions[bot]",
+    "email": "41898282+github-actions[bot]@users.noreply.github.com",
+    "noVersionPrefix": true,
+    "plugins": [
+        "git-tag",
+        [
+            "exec",
+            {
+                "afterVersion": "[ \"$ARG_0\" = '{\"dryRun\":true}' ] || (python -m build --no-isolation && if unzip -p dist/*.whl '*.dist-info/METADATA' | grep -q '^Requires-Dist: .* @ '; then echo '::warning::Skipped the PyPI upload: PyPI rejects packages with Git URL dependencies.'; else twine upload dist/*; fi)"
+            }
+        ],
+        "released"
+    ]
+}

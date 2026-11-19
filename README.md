@@ -14,7 +14,7 @@ opticstream deploy ...  # or: ops deploy ...
 
 Full documentation is available at the hosted documentation site:
 
-https://your-docs-url-here
+https://opticstream.lincbrain.org
 
 If you want to build and browse the documentation locally while developing,
 see the developer documentation under `docs/developer`.
@@ -27,7 +27,7 @@ We recommend using [`uv`](https://docs.astral.sh/uv/) to manage the development
 environment for OpticStream.
 
 ```bash
-git clone https://github.com/ORG/opticstream.git
+git clone https://github.com/lincbrain/opticstream.git
 cd opticstream
 
 # create and sync a uv-managed environment from pyproject.toml / uv.lock

@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata from this file."
+type: software
+title: "OpticStream: Workflows for processing light-sheet microscopy and PS-OCT data for the LINC project"
+abstract: >-
+  OpticStream provides Prefect-based workflows and command-line tools that
+  watch acquisitions and process large light-sheet microscopy (LSM) strips and
+  polarization-sensitive optical coherence tomography (PS-OCT) tiles for the
+  LINC project.
+authors:
+  - given-names: Kaidong
+    family-names: Chai
+    orcid: https://orcid.org/0009-0001-4654-4092
+    affiliation: "Athinoula A. Martinos Center for Biomedical Imaging, Massachusetts General Hospital, Boston, MA, USA"
+  - given-names: Kabilar
+    family-names: Gunalan
+    orcid: https://orcid.org/0000-0001-6964-4865
+    affiliation: "McGovern Institute for Brain Research, Massachusetts Institute of Technology, Cambridge, MA, USA"
+  - given-names: James Jay
+    family-names: Scherick
+    affiliation: "Athinoula A. Martinos Center for Biomedical Imaging, Massachusetts General Hospital, Boston, MA, USA"
+repository-code: "https://github.com/lincbrain/opticstream"
+url: "https://opticstream.lincbrain.org"
+license: Apache-2.0
+keywords:
+  - LINC
+  - neuroimaging
+  - microscopy
+  - light-sheet microscopy
+  - PS-OCT
+  - Prefect
+  - workflows

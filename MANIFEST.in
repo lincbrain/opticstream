@@ -1,0 +1,2 @@
+# Keep the local environment file out of the source distribution.
+exclude .env
